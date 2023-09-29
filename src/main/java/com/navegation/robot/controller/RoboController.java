@@ -23,12 +23,12 @@ public class RoboController {
         }
         Robo robo = roboService.sendCommands(commands);
 
-        if (!isValidPosition(robo.getX(), robo.getY())) {
-            return ResponseEntity.badRequest().body("Invalid Position");
+        if (isValidPosition(robo.getX(), robo.getY())) {
+            return ResponseEntity.ok(robo);
+
         }
 
-        return ResponseEntity.ok(robo);
-
+        return ResponseEntity.badRequest().body("Invalid Position");
     }
 
     private boolean isValidCommands(String commands) {
