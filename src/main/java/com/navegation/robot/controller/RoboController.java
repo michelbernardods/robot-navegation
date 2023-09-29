@@ -18,6 +18,8 @@ public class RoboController {
 
     @PostMapping("/mars/{commands}")
     public ResponseEntity<Object> sendCommand(@PathVariable(value = "commands") String commands) {
+        commands = commands.toUpperCase();
+
         if (!isValidCommands(commands)) {
             return ResponseEntity.badRequest().body("Invalid Command");
         }
