@@ -3,6 +3,7 @@ package com.navegation.robot.controller;
 import com.navegation.robot.model.Robo;
 import com.navegation.robot.service.RoboService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,13 +16,26 @@ public class RoboController {
         this.roboService = roverService;
     }
 
-    @PostMapping("/mars")
-    public Robo sendCommands(@RequestBody String commands) {
-        return roboService.sendCommands(commands);
+    @PostMapping("/mars/{commands}")
+    public ResponseEntity<Object> sendCommand(@PathVariable(value = "commands") String commands) {
+        if (!isValidCommands(commands)) {
+            return ResponseEntity.badRequest().body("Invalid Command");
+        }
+        Robo robo = roboService.sendCommands(commands);
+
+        if (!isValidPosition(robo.getX(), robo.getY())) {
+            return ResponseEntity.badRequest().body("Invalid Position");
+        }
+
+        return ResponseEntity.ok(robo);
+
     }
 
-    @PostMapping("/mars/{commands}")
-    public Robo sendCommand(@PathVariable(value = "commands") String commands) {
-        return roboService.sendCommands(commands);
+    private boolean isValidCommands(String commands) {
+        return commands.matches("^[LRM]+$");
+    }
+
+    private boolean isValidPosition(int x, int y) {
+        return x >= 0 && x <= 5 && y >= 0 && y <= 5;
     }
 }
